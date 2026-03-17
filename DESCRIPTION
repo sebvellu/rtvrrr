@@ -1,0 +1,19 @@
+Package: rtvrrr
+Title: Estimation and Forecasting of (Time-Varying) Reduced Rank
+    Regressions under Restrictions
+Version: 0.0.0.9000
+Date: 2026-03-17
+Authors@R: 
+    person("Sebastian", "Veldhuis", , "sebvellu@outlook.com", role = c("aut", "cre"))
+Author: Sebastian Veldhuis [aut, cre]
+Maintainer: Sebastian Veldhuis <sebvellu@outlook.com>
+Description: Provides tools for estimation and forecasting in
+    (time-varying) reduced rank regressions under restrictions.
+License: GPL-3
+Depends: 
+    R (>= 4.4.1)
+Imports: 
+    stats (>= 4.4.1)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
