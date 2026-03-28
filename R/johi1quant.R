@@ -1,3 +1,7 @@
+#' @importFrom cireg get_quantile
+#' 
+#' @keywords internal
+
 johi1quant <- function(
 	prob, hypo, dpow = -1, excl = FALSE, lgth = 1000, simu = 10000 #hypo = nums - cint
 ) {
@@ -19,5 +23,5 @@ johi1quant <- function(
 		}
 	}
 	#
-	return(apply(rslt, 2, get_quantile, prob))
+	return(apply(rslt, 2, cireg::get_quantile, prob))
 }

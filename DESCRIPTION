@@ -13,7 +13,10 @@ License: GPL-3
 Depends: 
     R (>= 4.4)
 Imports: 
-    stats (>= 4.4)
+    stats (>= 4.4),
+    cireg
+Remotes:
+    sebvellu/cireg
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
