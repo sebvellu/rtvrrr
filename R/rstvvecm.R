@@ -37,10 +37,14 @@
 #' @param evar Initial value for the covariance matrix of the error terms
 #' in the measurement equation.
 #' 
-#' @param arst Specification of the restrictions on the coefficients of 
-#' the input vectors in measurement equation. If not `NULL`, `NULL` is returned.
+#' @param ordr Order of the VECM. Equal to one plus the number of lags.
 #' 
-#' Default is `NULL`.
+#' Default is `1`.
+#' 
+#' @param dpow Highest power of polynomial time trends (e.g., -1: 
+#' no deterministic components, 0: constant only, 1: constant and linear trend)
+#' 
+#' Default is `0`.
 #' 
 #' @param bsbv Logical indication whether the state equation considered 
 #' by Brune, Scherrer and Bura (2022) should be used.

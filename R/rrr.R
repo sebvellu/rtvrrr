@@ -2,7 +2,11 @@
 #'
 #' Estimates a reduced rank regression under restrictions.
 #' 
-#' @param tsrs Matrix of values for the dependent variables.
+#' @param yvls Matrix of dependent variables.
+#' 
+#' @param xvls Matrix of (reduced rank coefficients related) regressors.
+#' 
+#' @param uvls Matrix of (not reduced rank coefficients related) regressors.
 #' 
 #' @param rrst Specification of the restrictions on the row space 
 #' parameter matrix. Either `NULL` or a list of length 3. If list of 

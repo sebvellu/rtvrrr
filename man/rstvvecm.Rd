@@ -56,6 +56,15 @@ vector, third element vector of initial values for the free parameters.}
 \item{evar}{Initial value for the covariance matrix of the error terms
 in the measurement equation.}
 
+\item{ordr}{Order of the VECM. Equal to one plus the number of lags.
+
+Default is \code{1}.}
+
+\item{dpow}{Highest power of polynomial time trends (e.g., -1:
+no deterministic components, 0: constant only, 1: constant and linear trend)
+
+Default is \code{0}.}
+
 \item{bsbv}{Logical indication whether the state equation considered
 by Brune, Scherrer and Bura (2022) should be used.
 
@@ -72,11 +81,6 @@ Default is 10000.}
 \item{mxis}{Maximum number of iterations (inner loop, switching).
 
 Default is 1.}
-
-\item{arst}{Specification of the restrictions on the coefficients of
-the input vectors in measurement equation. If not \code{NULL}, \code{NULL} is returned.
-
-Default is \code{NULL}.}
 }
 \value{
 Returns \code{NULL} if \code{arst} is not \code{NULL}, otherwise

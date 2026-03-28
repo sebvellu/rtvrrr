@@ -20,6 +20,12 @@ cstvrrr(
 )
 }
 \arguments{
+\item{yvls}{Matrix of dependent variables.}
+
+\item{xvls}{Matrix of (reduced rank coefficients related) regressors.}
+
+\item{uvls}{Matrix of (not reduced rank coefficients related) regressors.}
+
 \item{rrst}{Specification of the restrictions on the row space
 parameter matrix. Either \code{NULL} or a list of length 3. If list of
 length 3, then first element restriction matrix, second element restriction
@@ -76,8 +82,6 @@ Default is Inf.}
 \item{mxis}{Maximum number of iterations (inner loop, switching).
 
 Default is 1.}
-
-\item{tsrs}{Matrix of values for the measured output.}
 }
 \value{
 Returns \code{NULL} if \code{arst} is not \code{NULL}, otherwise

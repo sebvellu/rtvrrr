@@ -2,7 +2,11 @@
 #'
 #' Estimates an CS-TV-RRR under restrictions.
 #' 
-#' @param tsrs Matrix of values for the measured output.
+#' @param yvls Matrix of dependent variables.
+#' 
+#' @param xvls Matrix of (reduced rank coefficients related) regressors.
+#' 
+#' @param uvls Matrix of (not reduced rank coefficients related) regressors.
 #' 
 #' @param rrst Specification of the restrictions on the row space 
 #' parameter matrix. Either `NULL` or a list of length 3. If list of 
@@ -103,7 +107,7 @@ cstvrrr <- function(
     #
 	lgth <- nrow(yvls)
 	#
-	secs <- sum(diag(var(yvls)))/ncol(yvls)
+	secs <- sum(diag(stats::var(yvls)))/ncol(yvls)
     secs <- secs^2/10^2 # state error covariance matrix scale
     sics <- 10^3 # initial state covariance matrix scale
 	#

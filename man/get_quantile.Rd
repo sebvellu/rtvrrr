@@ -31,10 +31,12 @@ argument, which performs only the work needed to find the selected
 element.
 }
 \examples{
+\dontrun{
 set.seed(1)
 x <- rnorm(100)
 get_quantile(x, 0.5)
 get_quantile(x, 0.9)
+}
 
 }
 \keyword{internal}

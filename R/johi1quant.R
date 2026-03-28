@@ -11,7 +11,7 @@ johi1quant <- function(
 		dprt <- 0
 	}
 	for (indx in seq_len(simu)) {
-		tsrs <- dprt + apply(matrix(rnorm(hypo * lgth), lgth), 2, cumsum)
+		tsrs <- dprt + apply(matrix(stats::rnorm(hypo * lgth), lgth), 2, cumsum)
 		#rslt[indx, ] <- johi1stat(tsrs, 1, dpow, excl)
 		for (hidx in seq_len(hypo)) {
 			temp <- tsrs[, seq_len(hidx), drop = FALSE]

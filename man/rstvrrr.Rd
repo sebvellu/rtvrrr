@@ -20,6 +20,12 @@ rstvrrr(
 )
 }
 \arguments{
+\item{yvls}{Matrix of dependent variables.}
+
+\item{xvls}{Matrix of (reduced rank coefficients related) regressors.}
+
+\item{uvls}{Matrix of (not reduced rank coefficients related) regressors.}
+
 \item{rtrs}{Specification of the restrictions on the time-varying
 row space parameter matrix. Either \code{NULL} or a list. Must have
 length 4 if \code{lrst} is \code{NULL}, and length 3 otherwise.
@@ -76,8 +82,6 @@ Default is Inf.}
 \item{mxis}{Maximum number of iterations (inner loop, switching).
 
 Default is 1.}
-
-\item{tsrs}{Matrix of values for the measured output.}
 }
 \value{
 Returns \code{NULL} if \code{arst} is not \code{NULL}, otherwise
