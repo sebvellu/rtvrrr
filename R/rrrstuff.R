@@ -12,9 +12,9 @@ rrrstuff <- function(yvls, xvls, uvls = NULL, lgth) {
 		s01v <- m01v
 		s11v <- m11v
 		#
-		s00i <- safesolve(s00v)
-		s11i <- safesolve(s11v)
-		s11s <- sympow(s11i) #sympow(s11v, -1/2)
+		s00i <- helperkit::safesolve(s00v)
+		s11i <- helperkit::safesolve(s11v)
+		s11s <- helperkit::sympow(s11i) #sympow(s11v, -1/2)
 	} else {
 		m00v <- crossprod(yvls)
 		m01v <- crossprod(yvls, xvls)
@@ -23,15 +23,15 @@ rrrstuff <- function(yvls, xvls, uvls = NULL, lgth) {
 		m12v <- crossprod(xvls, uvls)
 		m22v <- crossprod(uvls)
 		#
-		m22i <- safesolve(m22v)
+		m22i <- helperkit::safesolve(m22v)
 		#
 		s00v <- m00v - tcrossprod(m02v %*% m22i, m02v)
 		s01v <- m01v - tcrossprod(m02v %*% m22i, m12v)
 		s11v <- m11v - tcrossprod(m12v %*% m22i, m12v)
 		#
-		s00i <- safesolve(s00v)
-		s11i <- safesolve(s11v)
-		s11s <- sympow(s11i)
+		s00i <- helperkit::safesolve(s00v)
+		s11i <- helperkit::safesolve(s11v)
+		s11s <- helperkit::sympow(s11i)
 	}
 	temp <- crossprod(s01v, s00i %*% s01v)
 	eigo <- eigen(tcrossprod(s11s %*% temp, s11s))

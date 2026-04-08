@@ -14,25 +14,25 @@ kalman_smoother <- function(sscf, sprd, supd, cprd, cupd) {
 	temr <- matrix(0, scol, scol)
 	#
 	for (time in mrow:1) {
-		cupt <- array3tomat(cupd, time)
-		cprt <- array3tomat(cprd, time)
+		cupt <- helperkit::array3tomat(cupd, time)
+		cprt <- helperkit::array3tomat(cprd, time)
 		#
 		temp <- tcrossprod(cupt, sscf)
-		temp <- temp %*% safesolve(cprt)
+		temp <- temp %*% helperkit::safesolve(cprt)
 		#
 		temq <- ssmo[time + 1, ] - sprd[time, ]
 		temq <- supd[time, ] + temp %*% temq
 		ssmo[time, ] <- temq
 		#
-		temq <- array3tomat(csmo, time + 1) - cprt
+		temq <- helperkit::array3tomat(csmo, time + 1) - cprt
 		temq <- cupt + tcrossprod(temp %*% temq, temp)
 		csmo[, , time] <- temq
 		#
-		tems <- tcrossprod(array3tomat(cupd, time + 1) + temr, temp)
+		tems <- tcrossprod(helperkit::array3tomat(cupd, time + 1) + temr, temp)
 		clag[, , time] <- tems
 		#
 		temr <- sscf %*% cupt
-		temr <- temp %*% (array3tomat(clag, time) - temr)
+		temr <- temp %*% (helperkit::array3tomat(clag, time) - temr)
 	}
 	#
 	return(list(ssmo = ssmo, csmo = csmo, clag = clag))

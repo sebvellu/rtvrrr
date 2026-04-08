@@ -24,21 +24,21 @@ kalman_filter <- function(mvls, mscf, mmea, mecv, sscf, smea, secv, sime, sicv) 
 		temq <- temp + secv
 		cprd[, , time] <- temq
 		#
-		msct <- array3tomat(mscf, time)
-		cprt <- array3tomat(cprd, time)
+		msct <- helperkit::array3tomat(mscf, time)
+		cprt <- helperkit::array3tomat(cprd, time)
 		#
 		temp <- tcrossprod(cprt, msct)
 		temq <- msct %*% temp + mecv
-		gain[, , time] <- temp %*% safesolve(temq)
+		gain[, , time] <- temp %*% helperkit::safesolve(temq)
 		#
-		gait <- array3tomat(gain, time)
+		gait <- helperkit::array3tomat(gain, time)
 		#
 		temq <- mvls[time, ] - (msct %*% sprd[time, ]) - mmea[time, ]
 		temq <- sprd[time, ] + gait %*% temq
 		supd[time + 1, ] <- temq
 		#
 		temp <- cprt - tcrossprod(gait, temp)
-		cupd[, , time + 1] <- forcesym(temp)
+		cupd[, , time + 1] <- helperkit::forcesym(temp)
 	}
 	#
 	return(list(sprd = sprd, supd = supd, cprd = cprd, cupd = cupd))

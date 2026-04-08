@@ -5,7 +5,7 @@ johi1setup <- function(
 	if (dpow > -1) {
 		#idxa <- rep(2:lgth, dpow + 1)
 		#idxb <- rep(0:dpow, each = lgth - 1)
-		dvls <- polydet(lgth, dpow)[2:lgth, , drop = FALSE] #matrix(idxa^idxb, lgth - 1)
+		dvls <- helperkit::polydet(lgth, dpow)[2:lgth, , drop = FALSE] #matrix(idxa^idxb, lgth - 1)
 		dcol <- ncol(dvls)
 		if (excl) {
 			vvls <- dvls[, dcol, drop = FALSE]
@@ -28,7 +28,7 @@ johi1setup <- function(
 		xvls <- tsrs[-lgth, , drop = FALSE]
 		if (bima != 0) {
 			chsh <- sapply(0:bima, function(indx) {
-				return(chebyshev(seq_len(lgth - 1) + 1, indx, lgth))
+				return(helperkit::chebyshev(seq_len(lgth - 1) + 1, indx, lgth))
 			})
 			xvls <- t(sapply(1:(lgth - 1), function(irow) {
 				return(chsh[irow, ] %x% xvls[irow, ])

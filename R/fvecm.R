@@ -59,7 +59,7 @@ fvecm <- function(tsrs, objt, hriz = 1) {
 		}
 		#
 		chsh <- sapply(0:bima, function(indx) {
-			return(chebyshev(tidx, indx, lgth))
+			return(helperkit::chebyshev(tidx, indx, lgth))
 		})
 		xvls <- chsh %x% tsrs[tidx - 1, ]
 		xvls <- c(xvls, vvls)

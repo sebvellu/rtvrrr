@@ -114,11 +114,12 @@ cstvrrr <- function(
 	negloglike <- function(mscf, mmea, mecv, sprd, cprd) {
 		rslt <- 0
 		for (time in 1:lgth) {
-			msct <- array3tomat(mscf, time)
+			msct <- helperkit::array3tomat(mscf, time)
 			tmpa <- yvls[time, ] - msct %*% sprd[time, ] - mmea[time, ]
-			tmpb <- tcrossprod(msct %*% array3tomat(cprd, time), msct) + mecv
-			tmpa <- crossprod(tmpa, safesolve(tmpb) %*% tmpa)
-			rslt <- rslt + ldet(tmpb) + tmpa
+            tmpb <- helperkit::array3tomat(cprd, time)
+			tmpb <- tcrossprod(msct %*% tmpb, msct) + mecv
+			tmpa <- crossprod(tmpa, helperkit::safesolve(tmpb) %*% tmpa)
+			rslt <- rslt + helperkit::ldet(tmpb) + tmpa
 		}
 		return(drop(rslt)/lgth)
 	}
@@ -238,7 +239,7 @@ cstvrrr <- function(
             uvls <- matrix(nrow = lgth, ncol = 0)
             uinv <- matrix(nrow = 0, ncol = 0)
         } else {
-            uinv <- safesolve(crossprod(uvls))
+            uinv <- helperkit::safesolve(crossprod(uvls))
         }
         #
         # ALGORITHM:
@@ -254,8 +255,8 @@ cstvrrr <- function(
         xarr <- array(t(xrfv), c(1, lrco, lgth))
         xidn <- xarr %x% diag(1, lfro)
         #
-        mscf <- arraymultmat(xidn, ltrm)
-        mmea <- arraymultvec(xidn, ltrv)
+        mscf <- helperkit::arraymultmat(xidn, ltrm)
+        mmea <- helperkit::arraymultvec(xidn, ltrv)
         mmea <- mmea + tcrossprod(xrfv, lnfc)
         mmea <- mmea + tcrossprod(uvls, augm)
         #
@@ -275,8 +276,8 @@ cstvrrr <- function(
             )
             #
             sime <- kalm$ssmo[1, ]
-            sicv <- array3tomat(kalm$csmo, 1)
-            sicv <- forcesym(sicv)
+            sicv <- helperkit::array3tomat(kalm$csmo, 1)
+            sicv <- helperkit::forcesym(sicv)
             #
             ssd0 <- kalm$ssmo[1:lgth, , drop = FALSE]
             ssm0 <- colMeans(ssd0)
@@ -293,12 +294,12 @@ cstvrrr <- function(
             ltfc <- array(NA_real_, c(lfro, lrco, lgth))
             for (time in 1:lgth) {
                 tmpa <- tcrossprod(ssd0[time, ])
-                s00v <- s00v + tmpa + array3tomat(kalm$csmo, time)
+                s00v <- s00v + tmpa + helperkit::array3tomat(kalm$csmo, time)
                 tmpa <- tcrossprod(ssd1[time, ], ssd0[time, ]) 
-                s10v <- s10v + tmpa + array3tomat(kalm$clag, time)
+                s10v <- s10v + tmpa + helperkit::array3tomat(kalm$clag, time)
                 tmpa <- tcrossprod(ssd1[time, ]) 
                 #
-                csmt <- array3tomat(kalm$csmo, time + 1)
+                csmt <- helperkit::array3tomat(kalm$csmo, time + 1)
                 #
                 s11v <- s11v + tmpa + csmt
                 #
@@ -313,7 +314,7 @@ cstvrrr <- function(
 			xrlvfun <- function(xrfv) {
 				rslt <- matrix(0, lgth, lfro)
 				for (time in seq_len(lgth)) {
-					tmpb <- array3tomat(ltfc, time)
+					tmpb <- helperkit::array3tomat(ltfc, time)
 					rslt[time, ] <- drop(tmpb %*% xrfv[time, ])
 				}
 				return(rslt)
@@ -324,29 +325,29 @@ cstvrrr <- function(
             if (bsbv) {
                 secv <- (s11v - s10v - t(s10v) + s00v)/lgth # Sigma
             } else {
-                sscf <- s10v %*% safesolve(s00v) #Pi
+                sscf <- s10v %*% helperkit::safesolve(s00v) #Pi
                 smea <- drop(ssm1 - sscf %*% ssm0) #pi
                 secv <- (s11v - tcrossprod(sscf, s10v))/lgth #Sigma
             }
-            secv <- forcesym(secv)
+            secv <- helperkit::forcesym(secv)
             #
             submin <- function(xrfv, xrld, rfct, lnfc) {
 	        	tmpb <- ydet - xrld - tcrossprod(xdet %*% rfct, lnfc)
                 scov <- 0
 				for (time in 1:lgth) {
 				    tmpa <- (xrfv[time, ] %x% diag(1, lfro)) %*% ltrm
-                    csmt <- array3tomat(kalm$csmo, time + 1)
+                    csmt <- helperkit::array3tomat(kalm$csmo, time + 1)
 				    tmpa <- tcrossprod(tmpa %*% csmt, tmpa)
 				    scov <- scov + tmpa # (x'b o I) HPH' (x'b o I)'
 				}
                 evar <- scov + crossprod(tmpb)
-                evar <- forcesym(evar/lgth)
-                nllk <- lgth * ldet(evar)
+                evar <- helperkit::forcesym(evar/lgth)
+                nllk <- lgth * helperkit::ldet(evar)
                 #
                 return(list(nllk = nllk/lgth, evar = evar))
             }
             gnew <- submin(xrfv, xrld, rfct, lnfc)
-            evai <- safesolve(gnew$evar)
+            evai <- helperkit::safesolve(gnew$evar)
             #
             ites <- 1
             #
@@ -372,15 +373,15 @@ cstvrrr <- function(
                             pmat[jidx, iidx, time] <- tmpb
                         }
                     }
-                    tmpa <- array3tomat(ltfc, time) + lnfc
+                    tmpa <- helperkit::array3tomat(ltfc, time) + lnfc
                     tmpb <- crossprod(tmpa, evai)
                     qnta <- qnta + (tmpb %*% tcrossprod(ydet[time, ], xdet[time, ]))
-                    qntb <- qntb + (tmpb %*% tmpa + array3tomat(pmat, time))
+                    qntb <- qntb + (tmpb %*% tmpa + helperkit::array3tomat(pmat, time))
                 }
 				#
                 tmpb <- crossprod(rfrm, xxdt %x% qntb)
                 tmpd <- crossprod(rfrm, c(qnta))
-                rfur <- safesolve(tmpb %*% rfrm) %*% (tmpd - tmpb %*% rfrv) # kappa update
+                rfur <- helperkit::safesolve(tmpb %*% rfrm) %*% (tmpd - tmpb %*% rfrv) # kappa update
 				#
     			rfct <- rfrm %*% rfur + rfrv
     			rfct <- matrix(rfct, rfro, lrco, TRUE) # beta update
@@ -394,15 +395,15 @@ cstvrrr <- function(
                     tmpb <- crossprod(lnrm, tmpb %x% evai)
                     tmpd <- evai %*% crossprod(ydet - xrld, xdet %*% rfct)
                     tmpd <- crossprod(lnrm, c(tmpd))
-                    lnur <- safesolve(tmpb %*% lnrm) %*% (tmpd - tmpb %*% lnrv) # gamma update
+                    lnur <- helperkit::safesolve(tmpb %*% lnrm) %*% (tmpd - tmpb %*% lnrv) # gamma update
                     #
                     lnfc <- lnrm %*% lnur + lnrv
                     lnfc <- matrix(lnfc, lfro, lrco) # alpha update
                 }
                 #
                 gnew <- submin(xrfv, xrld, rfct, lnfc)
-                evai <- safesolve(gnew$evar)
-                #print(c(gnew, ldet(evar) + ncol(yvls))))
+                evai <- helperkit::safesolve(gnew$evar)
+                #print(c(gnew, helperkit::ldet(evar) + ncol(yvls))))
 				# == ldet(evar) ##?
                 #
                 if (stopcrit(gnew$nllk, gold$nllk) || (ites > mxis)) {
@@ -418,8 +419,8 @@ cstvrrr <- function(
 			xarr <- array(t(xrfv), c(1, lrco, lgth))
             xidn <- xarr %x% diag(1, lfro)
 			#
-			mscf <- arraymultmat(xidn, ltrm)
-			mmea <- arraymultvec(xidn, ltrv)
+			mscf <- helperkit::arraymultmat(xidn, ltrm)
+			mmea <- helperkit::arraymultvec(xidn, ltrv)
 			mmea <- mmea + tcrossprod(xrfv, lnfc)
 			mmea <- mmea + tcrossprod(uvls, augm)
 			#

@@ -1,5 +1,3 @@
-#' @importFrom cireg get_quantile
-#' 
 #' @keywords internal
 
 johi1quant <- function(
@@ -7,7 +5,7 @@ johi1quant <- function(
 ) {
 	rslt <- matrix(NA_real_, simu, hypo)
 	if (dpow > - 1) {
-		detr <- polydet(lgth, dpow + 1 - excl)
+		detr <- helperkit::polydet(lgth, dpow + 1 - excl)
 		#dprt <- detr %*% matrix(1/lgth^dpow, ncol(detr), hypo)
 		dprt <- rep(rowSums(detr/lgth^dpow), hypo)
 		dim(dprt) <- c(nrow(detr), hypo)
@@ -23,5 +21,5 @@ johi1quant <- function(
 		}
 	}
 	#
-	return(apply(rslt, 2, cireg::get_quantile, prob))
+	return(apply(rslt, 2, helperkit::get_quantile, prob))
 }

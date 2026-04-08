@@ -53,7 +53,7 @@ jvecm <- function(tsrs, cirk, ordr = 1, dpow = 0, excl = FALSE) {
 	cint <- eign[, 1:cirk, drop = FALSE]
 	#
 	temp <- crossprod(cint, rslt$s11v %*% cint)
-	ldng <- (rslt$s01v %*% cint) %*% safesolve(temp) #rslt$s01v %*% cint/sqrt(lgth) #*sqrt(lgth)
+	ldng <- (rslt$s01v %*% cint) %*% helperkit::safesolve(temp) #rslt$s01v %*% cint/sqrt(lgth) #*sqrt(lgth)
 	#print(crossprod(ldng, solve(rslt$s00v/lgth) %*% ldng))
 	#print(rslt$eigo$values)
 	#print(((rslt$s01v %*% rslt$eigo$vectors %*% safesolve(crossprod(rslt$eigo$vectors , rslt$s11v %*% rslt$eigo$vectors))) %*% t(rslt$eigo$vectors)))

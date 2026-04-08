@@ -9,14 +9,14 @@ Author: Sebastian Veldhuis [aut, cre]
 Maintainer: Sebastian Veldhuis <sebvellu@outlook.com>
 Description: Provides tools for estimation and forecasting in
     (time-varying) reduced rank regressions under restrictions.
-License: GPL-3
+License: GPL (>= 3)
 Depends: 
     R (>= 4.4)
 Imports: 
     stats (>= 4.4),
-    cireg
-Remotes:
-    sebvellu/cireg
+    helperkit (>= 0.0.0.9000)
+Remotes: 
+    sebvellu/helperkit
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3

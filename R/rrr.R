@@ -155,7 +155,7 @@ rrr <- function(#restricted reduced rank regression estimation
 			m12v <- crossprod(xvls, uvls)
 			m22v <- crossprod(uvls)
 			#
-			m22i <- safesolve(m22v)
+			m22i <- helperkit::safesolve(m22v)
 			#
 			s00v <- m00v - tcrossprod(m02v %*% m22i, m02v)
 			s01v <- m01v - tcrossprod(m02v %*% m22i, m12v)
@@ -166,13 +166,13 @@ rrr <- function(#restricted reduced rank regression estimation
 			tmpa <- tcrossprod(lfct, s01v %*% rfct)
 			tmpb <- crossprod(rfct, s11v %*% rfct)
 			tmpa <- s00v - tmpa - t(tmpa) + tcrossprod(lfct %*% tmpb, lfct)
-			evar <- forcesym(tmpa/lgth)
-			nllk <- lgth * ldet(evar) #+ sum(diag(safesolve(evar) %*% tmpa))
+			evar <- helperkit::forcesym(tmpa/lgth)
+			nllk <- lgth * helperkit::ldet(evar) #+ sum(diag(safesolve(evar) %*% tmpa))
 			return(list(nllk = nllk/lgth, evar = evar))
 		}
 		#
 		fnew <- objtfun(lfct, rfct)
-		evai <- safesolve(fnew$evar)
+		evai <- helperkit::safesolve(fnew$evar)
 		#
 		iter <- 1
 		repeat {
@@ -181,20 +181,20 @@ rrr <- function(#restricted reduced rank regression estimation
 			tmpb <- crossprod(lfct, evai)
 			tmpa <- crossprod(rfrm, s11v %x% (tmpb %*% lfct))
 			tmpb <- crossprod(rfrm, as.vector(tmpb %*% s01v))
-			rfur <- safesolve(tmpa %*% rfrm) %*% (tmpb - tmpa %*% rfrv)
+			rfur <- helperkit::safesolve(tmpa %*% rfrm) %*% (tmpb - tmpa %*% rfrv)
 			#
 			rfct <- rfrm %*% rfur + rfrv
 			rfct <- matrix(rfct, rfro, lrco, TRUE)
 			#
 			tmpa <- crossprod(lfrm, crossprod(rfct, s11v %*% rfct) %x% evai)
 			tmpb <- crossprod(lfrm, as.vector(evai %*% s01v %*% rfct))
-			lfur <- safesolve(tmpa %*% lfrm) %*% (tmpb - tmpa %*% lfrv)
+			lfur <- helperkit::safesolve(tmpa %*% lfrm) %*% (tmpb - tmpa %*% lfrv)
 			#
 			lfct <- lfrm %*% lfur + lfrv
 			lfct <- matrix(lfct, lfro, lrco)
 			#
 			fnew <- objtfun(lfct, rfct)
-			evai <- safesolve(fnew$evar)
+			evai <- helperkit::safesolve(fnew$evar)
 			#
 			if (stopcrit(fnew$nllk, fold$nllk) || (iter > mxit)) {
 				break
@@ -221,13 +221,13 @@ rrr <- function(#restricted reduced rank regression estimation
 		if (fish) {
 			fish <- flvr
 			tmpa <- diag(1, ncol(rfct)) %x% (crossprod(xvls, rsds) %*% evai)
-			tmpa <- commat(nrow(rfct), ncol(rfct)) %*% tmpa
+			tmpa <- helperkit::commat(nrow(rfct), ncol(rfct)) %*% tmpa
 			tmpa <- ((m11v %*% rfct) %x% crossprod(lfct, evai)) - tmpa
 			tmpa <- crossprod(rfrm, tmpa %*% lfrm)
 			tmpb <- crossprod(rfrm, m12v %x% crossprod(lfct, evai))
 			tmpa <- evai %x% evai
 			tmpc <- t(lfct) %x% crossprod(xvls, rsds)
-			tmpc <- commat(nrow(lfct), ncol(lfct)) %*% tmpc
+			tmpc <- helperkit::commat(nrow(lfct), ncol(lfct)) %*% tmpc
 			tmpd <- crossprod(xvls, rsds) %x% t(lfct)
 			tmpc <- (crossprod(rfrm, tmpc + tmpd) %*% tmpa)/2
 			fish <- cbind(fish, tmpa, tmpb, tmpc)
@@ -235,13 +235,13 @@ rrr <- function(#restricted reduced rank regression estimation
 			tmpd <- crossprod(lfrm, tmpd %*% lfrm)
 			tmpe <- crossprod(lfrm, crossprod(rfct, m12v) %x% evai)
 			tmpf <- diag(1, nrow(lfct)) %x% crossprod(rfct, crossprod(xvls, rsds))
-			tmpf <- crossprod(commat(nrow(lfct), ncol(lfct)), tmpf)
+			tmpf <- crossprod(helperkit::commat(nrow(lfct), ncol(lfct)), tmpf)
 			tmpg <- crossprod(rfct, crossprod(xvls, rsds)) %x% diag(1, nrow(lfct))
 			tmpf <- (crossprod(lfrm, tmpf + tmpg) %*% tmpa)/2
 			fish <- rbind(fish, cbind(t(tmpa), tmpd, tmpe, tmpf))
 			tmpg <- m22v %x% evai
 			tmph <- diag(1, nrow(lfct)) %x% crossprod(uvls, rsds)
-			tmph <- crossprod(commat(nrow(lfct), ncol(uvls)), tmph)
+			tmph <- crossprod(helperkit::commat(nrow(lfct), ncol(uvls)), tmph)
 			tmpi <- crossprod(uvls, rsds) %x% diag(1, nrow(lfct))
 			tmph <- ((tmph + tmpi) %*% tmpa)/2
 			fish <- rbind(fish, cbind(t(tmpb), t(tmpe), tmpg, tmph))
@@ -250,9 +250,9 @@ rrr <- function(#restricted reduced rank regression estimation
 			tmpi <- ((tmpi - diag(1, nrow(lfct)^2)) %*% tmpa)/2
 			fish <- rbind(fish, cbind(t(tmpc), t(tmpf), t(tmph), tmpi))
 			#
-			fish <- forcesym(fish)
+			fish <- helperkit::forcesym(fish)
 			#
-			unvr <- safesolve(fish)
+			unvr <- helperkit::safesolve(fish)
 			idnt <- (qr(fish)$rank == ncol(fish))
 		} else {
 			fish <- NULL
