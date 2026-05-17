@@ -335,7 +335,7 @@ cstvrrr <- function(
 	        	tmpb <- ydet - xrld - tcrossprod(xdet %*% rfct, lnfc)
                 scov <- 0
 				for (time in 1:lgth) {
-				    tmpa <- (xrfv[time, ] %x% diag(1, lfro)) %*% ltrm
+				    tmpa <- (xrfv[time, , drop = FALSE] %x% diag(1, lfro)) %*% ltrm
                     csmt <- helperkit::array3tomat(kalm$csmo, time + 1)
 				    tmpa <- tcrossprod(tmpa %*% csmt, tmpa)
 				    scov <- scov + tmpa # (x'b o I) HPH' (x'b o I)'
