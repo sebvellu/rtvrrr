@@ -1,6 +1,6 @@
-#' Estimation of I(1) CS-TV-VECMs Under Restrictions
+#' Estimation of I(1) CS-TV-VECMs Under Restrictions Using Maximum Likelihood
 #'
-#' Estimates an I(1) CS-TV-VECM under restrictions.
+#' Estimates an I(1) CS-TV-VECM under restrictions using maximum likelihood.
 #' 
 #' @param tsrs Matrix of values for the measured I(1) output.
 #' 
@@ -86,6 +86,8 @@
 #'     at the optimal solutions found
 #'   - `ltrm`: Restriction matrix on time-varying adjustment coefficients matrix
 #'   - `ltrv`: Restriction vector on time-varying adjustment coefficients matrix
+#'   - `conv`: Integer code indicating convergece. `0` indicates successful
+#'     completion.
 #'   - `ordr`: Order of the VECM
 #'   - `dpow`: Highest power of polynomial time trends
 #'   - `excl`: Logical indicating whether the highest power of polynomial
@@ -101,74 +103,74 @@
 #' 
 #' @export
 #' 
-cstvvecm <- function(
-	tsrs, rrst, lnrs, ltrs, evar, ordr = 1, dpow = 0, bsbv = FALSE,
+cstvvecm_ml <- function(
+    tsrs, rrst, lnrs, ltrs, evar, ordr = 1, dpow = 0, bsbv = FALSE,
     tolr = 100 * sqrt(.Machine$double.eps), mxit = 10000, mxis = 1
 ) {
-	if (is.null(ltrs)) {
-        if (is.null(lnrs)) {
-            if (is.null(rrst)) {
-                return(NULL)
-            } else {
-                if (nrow(rrst[[1]]) == length(rrst[[4]])) {
-                    excl <- FALSE
-                } else {
-                    excl <- TRUE
-                }
-            }
+  if (is.null(ltrs)) {
+    if (is.null(lnrs)) {
+      if (is.null(rrst)) {
+        return(NULL)
+      } else {
+        if (nrow(rrst[[1]]) == length(rrst[[4]])) {
+          excl <- FALSE
         } else {
-            if (is.null(rrst)) {
-                if (nrow(lnrs[[1]]) == length(lnrs[[4]])) {
-                    excl <- FALSE
-                } else {
-                    excl <- TRUE
-                }
-            } else {
-                if (nrow(lnrs[[1]]) == nrow(rrst[[1]])) {
-                    excl <- FALSE
-                } else {
-                    excl <- TRUE
-                }
-            } 
+          excl <- TRUE
         }
+      }
     } else {
-        if (is.null(rrst)) {
-            if (nrow(ltrs[[1]]) == length(ltrs[[4]])) {
-                excl <- FALSE
-            } else {
-                excl <- TRUE
-            }
+      if (is.null(rrst)) {
+        if (nrow(lnrs[[1]]) == length(lnrs[[4]])) {
+          excl <- FALSE
         } else {
-            if (nrow(ltrs[[1]]) == nrow(rrst[[1]])) {
-                excl <- FALSE
-            } else {
-                excl <- TRUE
-            }
+          excl <- TRUE
         }
+      } else {
+        if (nrow(lnrs[[1]]) == nrow(rrst[[1]])) {
+          excl <- FALSE
+        } else {
+          excl <- TRUE
+        }
+      } 
     }
-	rslt <- johi1setup(tsrs, ordr, dpow, excl, 0, 0, 0)
-	rslt <- cstvrrr(
-		yvls = rslt$yvls,
-		xvls = rslt$xvls,
-		uvls = rslt$uvls,
-		rrst = rrst,
-        lnrs = lnrs,
-        ltrs = ltrs,
-        evar = evar,
-		arst = NULL,
-		bsbv = bsbv,
-        tolr = tolr,
-        mxit = mxit,
-        mxis = mxis
-	)
-    rslt <- c(
-        rslt,
-        list(
-			ordr = ordr,
-			dpow = dpow,
-			excl = excl
-		)
+  } else {
+    if (is.null(rrst)) {
+      if (nrow(ltrs[[1]]) == length(ltrs[[4]])) {
+        excl <- FALSE
+      } else {
+        excl <- TRUE
+      }
+    } else {
+      if (nrow(ltrs[[1]]) == nrow(rrst[[1]])) {
+        excl <- FALSE
+      } else {
+        excl <- TRUE
+      }
+    }
+  }
+  rslt <- johi1setup(tsrs, ordr, dpow, excl, 0, 0, 0)
+  rslt <- cstvrrr_ml(
+    yvls = rslt$yvls,
+    xvls = rslt$xvls,
+    uvls = rslt$uvls,
+    rrst = rrst,
+    lnrs = lnrs,
+    ltrs = ltrs,
+    evar = evar,
+    arst = NULL,
+    bsbv = bsbv,
+    tolr = tolr,
+    mxit = mxit,
+    mxis = mxis
+  )
+  rslt <- c(
+    rslt,
+    list(
+      ordr = ordr,
+      dpow = dpow,
+      excl = excl
     )
-	#
-	return(rslt)
+  )
+  #
+  return(rslt)
 }
