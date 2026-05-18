@@ -12,10 +12,11 @@ cstvvecm_ml(
   evar,
   ordr = 1,
   dpow = 0,
-  bsbv = FALSE,
-  tolr = 100 * sqrt(.Machine$double.eps),
-  mxit = 10000,
-  mxis = 1
+  meth = "Nelder-Mead",
+  lowr = -Inf,
+  uppr = Inf,
+  ctrl = list(),
+  hess = FALSE
 )
 }
 \arguments{
@@ -65,22 +66,26 @@ no deterministic components, 0: constant only, 1: constant and linear trend)
 
 Default is \code{0}.}
 
-\item{bsbv}{Logical indication whether the state equation considered
-by Brune, Scherrer and Bura (2022) should be used.
+\item{meth}{Method to be used in ``stats::optim''.
 
-Default is \code{FALSE}.}
+Default is \code{Nelder-Mead}.}
 
-\item{tolr}{Tolerance limit for optimization.
+\item{lowr}{Lower bound for certain methods in ``stats::optim''.
 
-Default is 100 * sqrt(.Machine$double.eps).}
+Default is `-Inf'.}
 
-\item{mxit}{Maximum number of iterations (outer loop).
+\item{uppr}{Upper bound for certain methods in ``stats::optim''.
 
-Default is 10000.}
+Default is `Inf'.}
 
-\item{mxis}{Maximum number of iterations (inner loop, switching).
+\item{ctrl}{List of control parameters for ``stats::optim''.
 
-Default is 1.}
+Default is `list()'.}
+
+\item{hess}{Logical. Should ``stats::optim'' return a numerically
+differentiated Hessian matrix?
+
+Default is `FALSE'.}
 }
 \value{
 Returns a list of the following values:

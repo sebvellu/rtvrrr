@@ -46,22 +46,26 @@
 #' 
 #' Default is `NULL`.
 #' 
-#' @param bsbv Logical indication whether the state equation considered 
-#' by Brune, Scherrer and Bura (2022) should be used.
+#' @param meth Method to be used in ``stats::optim''.
 #' 
-#' Default is `FALSE`.
+#' Default is `Nelder-Mead`.
 #' 
-#' @param tolr Tolerance limit for optimization. 
+#' @param lowr Lower bound for certain methods in ``stats::optim''.
 #' 
-#' Default is 100 * sqrt(.Machine$double.eps). 
+#' Default is `-Inf'.
 #' 
-#' @param mxit Maximum number of iterations (outer loop).
+#' @param uppr Upper bound for certain methods in ``stats::optim''.
 #' 
-#' Default is Inf.
+#' Default is `Inf'.
 #' 
-#' @param mxis Maximum number of iterations (inner loop, switching).
+#' @param ctrl List of control parameters for ``stats::optim''.
 #' 
-#' Default is 1.
+#' Default is `list()'.
+#' 
+#' @param hess Logical. Should ``stats::optim'' return a numerically 
+#' differentiated Hessian matrix?
+#' 
+#' Default is `FALSE'.
 #' 
 #' @return Returns `NULL` if `arst` is not `NULL`, otherwise 
 #' a list of the following values:
@@ -100,8 +104,8 @@
 #' @export
 #' 
 cstvrrr_ml <- function(
-    yvls, xvls, uvls, rrst, lnrs, ltrs, evar, arst = NULL, bsbv = FALSE,
-    tolr = 100 * sqrt(.Machine$double.eps), mxit = Inf, mxis = 1
+    yvls, xvls, uvls, rrst, lnrs, ltrs, evar, arst = NULL, 
+    meth = "Nelder-Mead", lowr = -Inf, uppr = Inf, ctrl = list(), hess = FALSE
 ) {
   if (!is.null(arst)) {
     return(NULL)
@@ -273,7 +277,16 @@ cstvrrr_ml <- function(
         sicv = npar[[9]]
       ))
     }
-    opti <- stats::optim(opar, objf, method = "BFGS")
+    opti <- stats::optim(
+      par = opar, 
+      fn = objf, 
+      gr = NULL, 
+      method = meth,
+      lower = lowr,
+      upper = uppr,
+      control = ctrl,
+      hessian = hess
+    )
     para <- pack::unpack(opti$par, tmpl)
     return(list(
       kalm = args$last$kalm,
