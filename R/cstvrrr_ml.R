@@ -234,7 +234,7 @@ cstvrrr_ml <- function(
       msct <- ltrm %*% sprd[time, ] + ltrv
       tmpa <- (xvls[time, , drop = FALSE] %*% rfct) %x% diag(1, lfro)
       tmpb <- tmpa %*% msct
-      ltfc[, , time] <- msct
+      ltfc[, , time] <- matrix(msct, lfro, lrco)
       if (ncol(lnrm) > 0) {
         tmpb <- tmpb + lnfc %*% crossprod(rfct, xvls[time, ])
       }
