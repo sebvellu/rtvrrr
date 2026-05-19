@@ -1,4 +1,6 @@
-kalman_filter <- function(mvls, mscf, mmea, mecv, sscf, smea, secv, sime, sicv) {
+kalman_filter <- function(
+	mvls, mscf, mmea, mecv, sscf, smea, secv, sime, sicv, nllk = FALSE
+) {
 	mrow <- nrow(mvls)
 	mcol <- ncol(mvls)
 	scol <- nrow(sscf)
@@ -13,6 +15,12 @@ kalman_filter <- function(mvls, mscf, mmea, mecv, sscf, smea, secv, sime, sicv) 
 	#
 	supd[1, ] <- sime
 	cupd[, , 1] <- sicv
+	#
+	if (nllk) {
+		nlik <- 0
+	} else {
+		nlik <- NULL
+	}
 	#
 	for (time in 1:mrow) {
 		temp <- sscf %*% supd[time, ]
@@ -29,17 +37,29 @@ kalman_filter <- function(mvls, mscf, mmea, mecv, sscf, smea, secv, sime, sicv) 
 		#
 		temp <- tcrossprod(cprt, msct)
 		temq <- msct %*% temp + mecv
+		temq <- helperkit::forcesym(temq)
 		gain[, , time] <- temp %*% helperkit::safesolve(temq)
 		#
 		gait <- helperkit::array3tomat(gain, time)
 		#
-		temq <- mvls[time, ] - (msct %*% sprd[time, ]) - mmea[time, ]
-		temq <- sprd[time, ] + gait %*% temq
+		inov <- mvls[time, ] - (msct %*% sprd[time, ]) - mmea[time, ]
+		if (nllk) {
+			choq <- try(chol(temq), silent = TRUE)
+			if (!inherits(choq, "try-error")) {
+				quad <- sum(backsolve(choq, inov, transpose = TRUE)^2)
+				ldet <- 2 * sum(log(diag(choq)))
+			} else {
+				quad <- as.numeric(t(inov) %*% helperkit::safesolve(temq) %*% inov)
+				ldet <- helperkit::ldet(temq)
+			}
+			nlik <- nlik + 0.5 * (mcol * log(2 * pi) + ldet + quad)
+		}
+		temq <- sprd[time, ] + gait %*% inov
 		supd[time + 1, ] <- temq
 		#
 		temp <- cprt - tcrossprod(gait, temp)
 		cupd[, , time + 1] <- helperkit::forcesym(temp)
 	}
 	#
-	return(list(sprd = sprd, supd = supd, cprd = cprd, cupd = cupd))
+	return(list(sprd = sprd, supd = supd, cprd = cprd, cupd = cupd, nlik = nlik))
 }

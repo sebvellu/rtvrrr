@@ -224,30 +224,21 @@ cstvrrr_ml <- function(
     mmea <- mmea + tcrossprod(xrfv, lnfc)
     mmea <- mmea + tcrossprod(uvls, augm)
     #
-    kalm <- kalman_filter(yvls, mscf, mmea, evar, sscf, smea, secv, sime, sicv)
-    sprd <- kalm$sprd
-    cprd <- kalm$cprd
+    kalm <- kalman_filter(
+      mvls = yvls, 
+      mscf = mscf, 
+      mmea = mmea, 
+      mecv = evar,
+      sscf = sscf,
+      smea = smea,
+      secv = secv,
+      sime = sime,
+      sicv = sicv,
+      nllk = TRUE
+    )
     #
-    ltfc <- array(NA_real_, c(lfro, lrco, lgth))
-    rslt <- 0
-    for (time in 1:lgth) {
-      msct <- ltrm %*% sprd[time, ] + ltrv
-      tmpa <- (xvls[time, , drop = FALSE] %*% rfct) %x% diag(1, lfro)
-      tmpb <- tmpa %*% msct
-      ltfc[, , time] <- matrix(msct, lfro, lrco)
-      if (ncol(lnrm) > 0) {
-        tmpb <- tmpb + lnfc %*% crossprod(rfct, xvls[time, ])
-      }
-      tmpb <- yvls[time, ] - tmpb - augm %*% uvls[time, ]
-      tmpc <- tmpa %*% ltrm
-      tmpd <- helperkit::array3tomat(cprd, time)
-      tmpc <- tcrossprod(tmpc %*% tmpd, tmpc) + evar
-      #tmpb <- crossprod(tmpb, helperkit::safesolve(tmpc) %*% tmpb)
-      tmpb <- sum(tmpb * (helperkit::safesolve(tmpc) %*% tmpb))
-      rslt <- rslt + helperkit::ldet(tmpc) + tmpb
-    }
-    args$last <- list(kalm = kalm, rfct = rfct, lnfc = lnfc, ltfc = ltfc)
-    return(drop(rslt)/lgth)
+    args$last <- list(kalm = kalm, rfct = rfct, lnfc = lnfc)
+    return(drop(kalm$nlik)/lgth)
   }
   ofun <- function(rfur, lnur, augm, evar, sscf, smea, secv, sime, sicv) {
     npar <- list(
@@ -288,6 +279,13 @@ cstvrrr_ml <- function(
       hessian = hess
     )
     para <- pack::unpack(opti$par, tmpl)
+    #
+    ltfc <- array(NA_real_, c(lfro, lrco, lgth))
+    for (time in 1:lgth) {
+      msct <- ltrm %*% args$last$kalm$sprd[time, ] + ltrv
+      ltfc[, , time] <- matrix(msct, lfro, lrco)
+    }
+    #
     return(list(
       kalm = args$last$kalm,
       sime = para[[8]],
@@ -299,7 +297,7 @@ cstvrrr_ml <- function(
       augm = para[[3]],
       rfct = args$last$rfct,
       lnfc = args$last$lnfc,
-      ltfc = args$last$ltfc,
+      ltfc = ltfc,
       rfur = para[[1]],
       lnur = para[[2]],
       ltur = args$last$kalm$pred,
