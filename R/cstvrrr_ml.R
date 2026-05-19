@@ -301,7 +301,7 @@ cstvrrr_ml <- function(
       rfur = para[[1]],
       lnur = para[[2]],
       ltur = args$last$kalm$sprd,
-      nlik = opti$fn,
+      nlik = opti$value,
       ltrm = ltrm,
       ltrv = ltrv,
       conv = opti$convergence
