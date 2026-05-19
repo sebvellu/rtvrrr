@@ -300,7 +300,7 @@ cstvrrr_ml <- function(
       ltfc = ltfc,
       rfur = para[[1]],
       lnur = para[[2]],
-      ltur = args$last$kalm$pred,
+      ltur = args$last$kalm$sprd,
       nlik = opti$fn,
       ltrm = ltrm,
       ltrv = ltrv,
