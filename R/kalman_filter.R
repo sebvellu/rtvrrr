@@ -38,20 +38,21 @@ kalman_filter <- function(
 		temp <- tcrossprod(cprt, msct)
 		temq <- msct %*% temp + mecv
 		temq <- helperkit::forcesym(temq)
-		gain[, , time] <- temp %*% helperkit::safesolve(temq)
+		temr <- helperkit::safesolve(temq)
+		gain[, , time] <- temp %*% temr
 		#
 		gait <- helperkit::array3tomat(gain, time)
 		#
 		inov <- mvls[time, ] - (msct %*% sprd[time, ]) - mmea[time, ]
 		if (nllk) {
-			choq <- try(chol(temq), silent = TRUE)
-			if (!inherits(choq, "try-error")) {
-				quad <- sum(backsolve(choq, inov, transpose = TRUE)^2)
-				ldet <- 2 * sum(log(diag(choq)))
-			} else {
-				quad <- as.numeric(t(inov) %*% helperkit::safesolve(temq) %*% inov)
+			#choq <- try(chol(temq), silent = TRUE)
+			#if (!inherits(choq, "try-error")) {
+			#	quad <- sum(backsolve(choq, inov, transpose = TRUE)^2)
+			#	ldet <- 2 * sum(log(diag(choq)))
+			#} else {
+				quad <- as.numeric(t(inov) %*% temr %*% inov)
 				ldet <- helperkit::ldet(temq)
-			}
+			#}
 			nlik <- nlik + 0.5 * (mcol * log(2 * pi) + ldet + quad)
 		}
 		temq <- sprd[time, ] + gait %*% inov
